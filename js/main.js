@@ -49,17 +49,29 @@ PlayState.create = function () {
 };
 
 PlayState.update = function () {
+  this._handleCollisions();
   this._handleInput();
 };
 
 PlayState._loadLevel = function (data) {
+  //create groups/layers
+  this.platforms = this.game.add.group();
+
+  //instead of defining gravity in PlayState.init this allows for flexibility to define gravity in JSON for different types of gravity
+  const GRAVITY = 1200;
+  this.game.physics.arcade.gravity.y = GRAVITY;
   //spawns all platforms
   data.platforms.forEach(this._spawnPlatform, this);
   this._spawnCharacters({ hero: data.hero });
 };
 
 PlayState._spawnPlatform = function (platform) {
-  this.game.add.sprite(platform.x, platform.y, platform.image);
+  // updated to create groups of sprites that do not allow for gravity;
+  let sprite = this.platforms.create(platform.x, platform.y, platform.image);
+  this.game.physics.enable(sprite);
+  sprite.body.allowGravity = false;
+  // cannot be moved when colliding
+  sprite.body.immovable = true;
 };
 
 PlayState._spawnCharacters = function (data) {
@@ -76,6 +88,10 @@ PlayState._handleInput = function () {
   } else {
     this.hero.move(0);
   }
+}
+
+PlayState._handleCollisions = function () {
+  this.game.physics.arcade.collide(this.hero, this.platforms);
 }
 
 window.onload = function () {
