@@ -3,6 +3,10 @@ function Hero(game, x, y) {
   Phaser.Sprite.call(this, game, x, y, 'hero');
   // Phaser usually handles sprites by their center. 0 = left, down; 1 = right, up;
   this.anchor.set(0.5, 0.5);
+  //physics engine
+  this.game.physics.enable(this);
+  //world boundaries
+  this.body.collideWorldBounds = true;
 };
 
 Hero.prototype = Object.create(Phaser.Sprite.prototype);
@@ -10,7 +14,8 @@ Hero.prototype = Object.create(Phaser.Sprite.prototype);
 Hero.prototype.constructer = Hero;
 
 Hero.prototype.move = function (direction) {
-  this.x += direction * 2.5; // 2.5px/frame
+  const SPEED = 200;
+  this.body.velocity.x = direction * SPEED;
 }
 
 PlayState = {};
@@ -68,6 +73,8 @@ PlayState._handleInput = function () {
     this.hero.move(-1);
   } else if (this.keys.right.isDown) {
     this.hero.move(1);
+  } else {
+    this.hero.move(0);
   }
 }
 
